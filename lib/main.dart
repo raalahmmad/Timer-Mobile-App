@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import './timermodel.dart';
 import './widgets.dart';
 import './timer.dart';
+import './settings.dart';
 
 void main() => runApp(MyApp());
 
@@ -40,16 +41,20 @@ class TimerHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //context.read<CountDownTimer>().startWork();
-
-    //timer.startWork();
-
-    // timer = timer != null ? timer : Provider.of<CountDownTimer>(context);
-    // timer.startWork();
-
     return Scaffold(
       appBar: AppBar(
         title: Text('My Work Timer'),
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Settings(),
+                    ));
+              })
+        ],
       ),
       body: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
@@ -73,7 +78,9 @@ class TimerHomePage extends StatelessWidget {
                     child: ProductivityButton(
                         color: Color(0xff607D8B),
                         text: "Short Break",
-                        onPressed: () => timer.startBreak(true))),
+                        onPressed: () =>
+                            Provider.of<CountDownTimer>(context, listen: false)
+                                .startBreak(true))),
                 Padding(
                   padding: EdgeInsets.all(defaultPadding),
                 ),

@@ -20,6 +20,7 @@ class CountDownTimer with ChangeNotifier {
   }
 
   void startBreak(bool isShort) {
+    print('Callledd....');
     _radius = 1;
     _time = Duration(minutes: (isShort) ? shortBreak : longBreak, seconds: 0);
     _fullTime = _time;
@@ -39,10 +40,8 @@ class CountDownTimer with ChangeNotifier {
     _radius = 1;
     _time = Duration(minutes: this.work, seconds: 0);
     _fullTime = _time;
-    print('call stream');
     stream().listen((event) {
       notifyListeners();
-      print('notofyoingg...');
     });
   }
 
@@ -61,7 +60,6 @@ class CountDownTimer with ChangeNotifier {
     //sleep(Duration(seconds: 5));
 
     //yield* Stream.value(TimerModel('99:99', 0.6));
-    print('in Stream ...');
 
     yield* Stream.periodic(Duration(seconds: 1), (int a) {
       String time;
@@ -75,8 +73,6 @@ class CountDownTimer with ChangeNotifier {
       time = returnTime(_time);
       //notifyListeners();
       //return TimerModel(time, _radius);
-
-      print(_time);
     });
   }
 }
