@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:timer_mobile_app/timermodel.dart';
+import 'package:provider/provider.dart';
+
+import './timermodel.dart';
 import './widgets.dart';
 import './timer.dart';
 
@@ -9,23 +11,42 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'My Work Timer',
-        theme: ThemeData(
-          primarySwatch: Colors.blueGrey,
-        ),
-        home: TimerHomePage());
+    return ChangeNotifierProvider<CountDownTimer>(
+      create: (_) => CountDownTimer(),
+      child: MaterialApp(
+          title: 'My Work Timer',
+          theme: ThemeData(
+            primarySwatch: Colors.blueGrey,
+          ),
+          home: TimerHomePage()),
+    );
   }
 }
 
 class TimerHomePage extends StatelessWidget {
-  final CountDownTimer timer = CountDownTimer();
+  //final CountDownTimer timer = CountDownTimer();
+  CountDownTimer timer;
+
   final double defaultPadding = 5.0;
   emptyMethod() {}
 
+  TimerHomePage() {
+    print('******CONSTRUCTURE ');
+  }
+
+  void _startWork(BuildContext context) {
+    Provider.of<CountDownTimer>(context, listen: false).startWork();
+  }
+
   @override
   Widget build(BuildContext context) {
-    timer.startWork();
+    //context.read<CountDownTimer>().startWork();
+
+    //timer.startWork();
+
+    // timer = timer != null ? timer : Provider.of<CountDownTimer>(context);
+    // timer.startWork();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('My Work Timer'),
@@ -66,25 +87,20 @@ class TimerHomePage extends StatelessWidget {
                 ),
               ],
             ),
-            StreamBuilder(
-              initialData: TimerModel('READY!', 1),
-              stream: timer.stream(),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                TimerModel timer = snapshot.data;
-
-                return Expanded(
-                  child: CircularPercentIndicator(
-                    radius: availableWith / 2,
-                    lineWidth: 10,
-                    percent: timer.percent,
-                    center: Text(
-                      timer.time,
-                      style: Theme.of(context).textTheme.display1,
-                    ),
-                    progressColor: Color(0xff009688),
+            Consumer<CountDownTimer>(
+              child: Text('Go Go'),
+              builder: (context, value, child) => Expanded(
+                child: CircularPercentIndicator(
+                  radius: availableWith / 2,
+                  lineWidth: 10,
+                  percent: value.getTimer?.percent,
+                  center: Text(
+                    value.getTimer?.time,
+                    style: Theme.of(context).textTheme.display1,
                   ),
-                );
-              },
+                  progressColor: Color(0xff009688),
+                ),
+              ),
             ),
             Row(
               children: <Widget>[
@@ -95,7 +111,7 @@ class TimerHomePage extends StatelessWidget {
                     child: ProductivityButton(
                         color: Color(0xff212121),
                         text: 'Stop',
-                        onPressed: timer.stopTimer)),
+                        onPressed: emptyMethod())),
                 Padding(
                   padding: EdgeInsets.all(defaultPadding),
                 ),
@@ -103,7 +119,7 @@ class TimerHomePage extends StatelessWidget {
                     child: ProductivityButton(
                         color: Color(0xff009688),
                         text: 'Restart',
-                        onPressed: timer.startTimer)),
+                        onPressed: () => _startWork(context))),
                 Padding(
                   padding: EdgeInsets.all(defaultPadding),
                 ),

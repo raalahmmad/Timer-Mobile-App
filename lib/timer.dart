@@ -1,16 +1,23 @@
 import 'dart:async';
 import 'dart:io';
 import './timermodel.dart';
+import 'package:flutter/foundation.dart';
 
-class CountDownTimer {
+class CountDownTimer with ChangeNotifier {
   int work = 30;
   double _radius = 1;
   bool _isActive = true;
   Timer timer;
-  Duration _time;
+  Duration _time = Duration(seconds: 0);
   Duration _fullTime;
   int shortBreak = 5;
   int longBreak = 20;
+
+  TimerModel get getTimer {
+    var formatedTime = returnTime(_time);
+
+    return TimerModel(formatedTime, _radius);
+  }
 
   void startBreak(bool isShort) {
     _radius = 1;
@@ -32,6 +39,11 @@ class CountDownTimer {
     _radius = 1;
     _time = Duration(minutes: this.work, seconds: 0);
     _fullTime = _time;
+    print('call stream');
+    stream().listen((event) {
+      notifyListeners();
+      print('notofyoingg...');
+    });
   }
 
   String returnTime(Duration t) {
@@ -45,10 +57,11 @@ class CountDownTimer {
     return formattedTime;
   }
 
-  Stream<TimerModel> stream() async* {
+  Stream<void> stream() async* {
     //sleep(Duration(seconds: 5));
 
     //yield* Stream.value(TimerModel('99:99', 0.6));
+    print('in Stream ...');
 
     yield* Stream.periodic(Duration(seconds: 1), (int a) {
       String time;
@@ -60,7 +73,10 @@ class CountDownTimer {
         }
       }
       time = returnTime(_time);
-      return TimerModel(time, _radius);
+      //notifyListeners();
+      //return TimerModel(time, _radius);
+
+      print(_time);
     });
   }
 }
