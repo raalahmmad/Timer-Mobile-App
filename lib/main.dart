@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:timer_mobile_app/timermodel.dart';
 import './widgets.dart';
 import './timer.dart';
 
@@ -51,7 +52,7 @@ class TimerHomePage extends StatelessWidget {
                     child: ProductivityButton(
                         color: Color(0xff607D8B),
                         text: "Short Break",
-                        onPressed: emptyMethod)),
+                        onPressed: () => timer.startBreak(true))),
                 Padding(
                   padding: EdgeInsets.all(defaultPadding),
                 ),
@@ -59,23 +60,31 @@ class TimerHomePage extends StatelessWidget {
                     child: ProductivityButton(
                         color: Color(0xff455A64),
                         text: "Long Break",
-                        onPressed: emptyMethod)),
+                        onPressed: () => timer.startBreak(false))),
                 Padding(
                   padding: EdgeInsets.all(defaultPadding),
                 ),
               ],
             ),
-            Expanded(
-              child: CircularPercentIndicator(
-                radius: availableWith / 2,
-                lineWidth: 10,
-                percent: 0.7,
-                center: Text(
-                  '30:00',
-                  style: Theme.of(context).textTheme.display1,
-                ),
-                progressColor: Color(0xff009688),
-              ),
+            StreamBuilder(
+              initialData: TimerModel('READY!', 1),
+              stream: timer.stream(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                TimerModel timer = snapshot.data;
+
+                return Expanded(
+                  child: CircularPercentIndicator(
+                    radius: availableWith / 2,
+                    lineWidth: 10,
+                    percent: timer.percent,
+                    center: Text(
+                      timer.time,
+                      style: Theme.of(context).textTheme.display1,
+                    ),
+                    progressColor: Color(0xff009688),
+                  ),
+                );
+              },
             ),
             Row(
               children: <Widget>[
@@ -86,7 +95,7 @@ class TimerHomePage extends StatelessWidget {
                     child: ProductivityButton(
                         color: Color(0xff212121),
                         text: 'Stop',
-                        onPressed: emptyMethod)),
+                        onPressed: timer.stopTimer)),
                 Padding(
                   padding: EdgeInsets.all(defaultPadding),
                 ),
@@ -94,7 +103,7 @@ class TimerHomePage extends StatelessWidget {
                     child: ProductivityButton(
                         color: Color(0xff009688),
                         text: 'Restart',
-                        onPressed: emptyMethod)),
+                        onPressed: timer.startTimer)),
                 Padding(
                   padding: EdgeInsets.all(defaultPadding),
                 ),

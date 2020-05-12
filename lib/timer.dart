@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import './timermodel.dart';
 
 class CountDownTimer {
@@ -8,6 +9,24 @@ class CountDownTimer {
   Timer timer;
   Duration _time;
   Duration _fullTime;
+  int shortBreak = 5;
+  int longBreak = 20;
+
+  void startBreak(bool isShort) {
+    _radius = 1;
+    _time = Duration(minutes: (isShort) ? shortBreak : longBreak, seconds: 0);
+    _fullTime = _time;
+  }
+
+  void stopTimer() {
+    this._isActive = false;
+  }
+
+  void startTimer() {
+    if (_time.inSeconds > 0) {
+      this._isActive = true;
+    }
+  }
 
   void startWork() {
     _radius = 1;
@@ -27,6 +46,10 @@ class CountDownTimer {
   }
 
   Stream<TimerModel> stream() async* {
+    //sleep(Duration(seconds: 5));
+
+    //yield* Stream.value(TimerModel('99:99', 0.6));
+
     yield* Stream.periodic(Duration(seconds: 1), (int a) {
       String time;
       if (this._isActive) {
